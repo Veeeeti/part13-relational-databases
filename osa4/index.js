@@ -6,11 +6,16 @@ const logger = require('./utils/logger')
 const server = http.createServer(app)
 
 const Blog = require('./models/blog')
+const User = require('./models/user')
 
-Blog.sync()
+User.hasMany(Blog)
+Blog.belongsTo(User)
+
+Blog.sync({ alter: true })
+User.sync({ alter: true })
 
 module.exports = {
-  Blog
+  Blog, User
 }
 
 
