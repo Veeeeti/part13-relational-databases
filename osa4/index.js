@@ -5,6 +5,15 @@ const logger = require('./utils/logger')
 
 const server = http.createServer(app)
 
+const Blog = require('./models/blog')
+
+Blog.sync()
+
+module.exports = {
+  Blog
+}
+
+
 server.listen(config.PORT, () => {
   logger.info(`Server running on port ${config.PORT}`)
 })

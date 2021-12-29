@@ -14,10 +14,9 @@ const unknownEndpoint = (request, response) => {
 
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message)
-
-  if (error.name === 'CastError') {
+  if (error.name === 'CastError' || error.name === 'SequelizeDatabaseError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
+  } else if (error.name === 'ValidationError' || error.name === 'SequelizeValidationError') {
     return response.status(400).json({ error: error.message })
   } else if (error.name === 'JsonWebTokenError') {
     return response.status(401).json({
