@@ -29,7 +29,8 @@ usersRouter.post('/', async (request, response) => {
         const user = await User.create(body)
         response.json(user)
     } catch(e) {
-        return response.status(400).json({ error })
+        const errorMessage = e.message
+        return response.status(400).json({ errorMessage })
     }
 
     // const body = request.body
@@ -59,13 +60,13 @@ usersRouter.post('/', async (request, response) => {
     // response.json(savedUser)
 })
 
-usersRouter.post('/:id', async (req, res) => {
-    const user = await User.findByPk(req.params.id)
-    if (user) {
-        res.json(user)
-    } else {
-        res.status(404).end()
-    }
-})
+// usersRouter.get('/:id', async (req, res) => {
+//     const user = await User.findByPk(req.params.id)
+//     if (user) {
+//         res.json(user)
+//     } else {
+//         res.status(404).end()
+//     }
+// })
 
 module.exports = usersRouter
