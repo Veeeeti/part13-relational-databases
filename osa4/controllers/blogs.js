@@ -3,6 +3,25 @@ const blogsRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
 const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const { SECRET } = require('../utils/config')
+
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    try {
+      console.log(authorization.substring(7))
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+    } catch (error){
+      console.log(error)
+      return res.status(401).json({ error: 'token invalid' })
+    }
+  } else {
+    return res.status(401).json({ error: 'token missing' })
+  }
+  next()
+}
+
 
 blogsRouter.get('/', async (request, response, next) => {
     console.log('blogsRouter.get')
@@ -11,21 +30,36 @@ blogsRouter.get('/', async (request, response, next) => {
     response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', tokenExtractor, async (request, response, next) => {
   const body = request.body
   console.log('Adding blog with body: ',body)
 
-  const newBlog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
+  try {
+    const user = await User.findByPk(request.decodedToken.id)
+    const newBlog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      userId: user.id
+    }
+    const blog = await Blog.create(newBlog)
+    response.json(blog)
+  } catch(error) {
+    return response.status(400).json({ error })
   }
+  
+  // const newBlog = {
+  //   title: body.title,
+  //   author: body.author,
+  //   url: body.url,
+  //   likes: body.likes
+  // }
 
-  const blog = await Blog
-    .create(newBlog)
-    .catch(e => next(e))
-  response.json(blog)
+  // const blog = await Blog
+  //   .create(newBlog)
+  //   .catch(e => next(e))
+  // response.json(blog)
 
   // We'll worry about verification and users later.
   //  const token = middleware.tokenExtractor(request)

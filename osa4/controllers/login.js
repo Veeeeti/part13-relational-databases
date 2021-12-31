@@ -7,6 +7,7 @@ const User = require('../models/user')
 
 loginRouter.post('/', async (request, response) => {
   const body = request.body
+  console.log('login body: ', body)
 
   const user = await User.findOne({
     where: {
@@ -15,7 +16,7 @@ loginRouter.post('/', async (request, response) => {
   })
 
   const passwordCorrect = body.password === 'salainen'
-
+  
   if (!(user && passwordCorrect)) {
     return response.status(401).json({
       error: 'invalid username or password'
