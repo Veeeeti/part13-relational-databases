@@ -2,11 +2,18 @@ const bcrypt = require('bcryptjs')
 const usersRouter = require('express').Router()
 const middleware = require('../utils/middleware')
 const User = require('../models/user')
+const Blog = require('../models/blog')
 
 console.log('users.js alku', User)
 
 usersRouter.get('/', async (request, response, next) => {
-    const users = await User.findAll().catch(e => next(e))
+    const users = await User
+        .findAll({
+            include: {
+                model: Blog,
+                attributes: ['title']
+          }}) 
+        .catch(e => next(e))
     response.json(users)
 })
 

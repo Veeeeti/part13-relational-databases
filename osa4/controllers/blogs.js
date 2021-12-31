@@ -26,7 +26,14 @@ const tokenExtractor = (req, res, next) => {
 blogsRouter.get('/', async (request, response, next) => {
     console.log('blogsRouter.get')
 
-    const blogs = await Blog.findAll().catch(e => next(e))
+    const blogs = await Blog
+      .findAll({
+        include: {
+          model: User,
+          attributes: ['name']
+        }
+      })
+      .catch(e => next(e))
     response.json(blogs)
 })
 
@@ -69,11 +76,12 @@ blogsRouter.post('/', tokenExtractor, async (request, response, next) => {
   //  }
 })
 
-blogsRouter.delete('/:id', async (request, response, next) => {
+blogsRouter.delete('/:id', tokenExtractor,async (request, response, next) => {
     console.log('Id to be fetched and delted: ',request.params.id)
     const blog = await Blog.findByPk(request.params.id).catch(e => next(e))
+    const user = await User.findByPk(request.decodedToken.id)
 
-    if (blog) {
+    if (blog && user.id === blog.userId) {
       console.log('blog to be deleted: ', blog)
       await blog.destroy().catch(e => next(e))
       response.status(204).end()
