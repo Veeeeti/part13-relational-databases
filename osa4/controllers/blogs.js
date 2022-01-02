@@ -5,6 +5,7 @@ const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const { SECRET } = require('../utils/config')
+const { Op } = require('sequelize')
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get('authorization')
@@ -26,12 +27,21 @@ const tokenExtractor = (req, res, next) => {
 blogsRouter.get('/', async (request, response, next) => {
     console.log('blogsRouter.get')
 
+    const where = {}
+
+    if (request.query.title) {
+      where.title = {
+        [Op.substring]: request.query.title
+      }
+    }
+
     const blogs = await Blog
       .findAll({
         include: {
           model: User,
           attributes: ['name']
-        }
+        },
+        where
       })
       .catch(e => next(e))
     response.json(blogs)
