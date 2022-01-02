@@ -27,11 +27,18 @@ const tokenExtractor = (req, res, next) => {
 blogsRouter.get('/', async (request, response, next) => {
     console.log('blogsRouter.get')
 
-    const where = {}
+    let where = {}
 
-    if (request.query.title) {
-      where.title = {
-        [Op.substring]: request.query.title
+    if (request.query.search) {
+      where = {
+        [Op.or]: [
+          {
+            title: { [Op.iLike]: request.query.search }            
+          },
+          {
+            author: { [Op.iLike]: request.query.search }
+          }
+        ]
       }
     }
 
