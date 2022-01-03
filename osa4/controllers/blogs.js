@@ -48,7 +48,7 @@ blogsRouter.get('/', async (request, response, next) => {
           model: User,
           attributes: ['name']
         },
-        order: [ 'likes', 'ASC'],
+        order: [ [ 'likes', 'ASC' ] ],
         where
       })
       .catch(e => next(e))
