@@ -5,18 +5,18 @@ const logger = require('./utils/logger')
 
 const server = http.createServer(app)
 
-const Blog = require('./models/blog')
-const User = require('./models/user')
+// const Blog = require('./models/blog')
+// const User = require('./models/user')
 
-User.hasMany(Blog)
-Blog.belongsTo(User)
+// User.hasMany(Blog)
+// Blog.belongsTo(User)
 
-Blog.sync({ alter: true })
-User.sync({ alter: true })
+// // Blog.sync({ alter: true })
+// // User.sync({ alter: true })
 
-module.exports = {
-  Blog, User
-}
+// module.exports = {
+//   Blog, User
+// }
 
 
 server.listen(config.PORT, () => {
